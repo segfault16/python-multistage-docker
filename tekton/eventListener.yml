@@ -1,0 +1,9 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: python-multistage-docker-listener
+  namespace: tekton-pipelines
+spec:
+  serviceAccountName: deployer
+  triggers:
+    - triggerRef: python-multistage-docker-trigger

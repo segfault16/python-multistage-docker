@@ -1,0 +1,10 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: python-multistage-docker-trigger
+  namespace: tekton-pipelines
+spec:
+  bindings:
+    - ref: mega-triggerbinding
+  template:
+    ref: python-multistage-docker-triggertemplate

@@ -55,10 +55,10 @@ spec:
     - name: get-commit-sha
       runAfter:
         - fetch-source
-      results:
+      taskSpec:
+        results:
         - name: commit-sha
           description: The SHA of the commit that was checked out.
-      taskSpec:
         steps:
           - name: get-sha
             image: public.ecr.aws/bitnami/git:latest

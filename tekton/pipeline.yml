@@ -55,17 +55,20 @@ spec:
     - name: get-commit-sha
       runAfter:
         - fetch-source
+      results:
+        - name: commit-sha
+          description: The SHA of the commit that was checked out.
       taskSpec:
         steps:
           - name: get-sha
             image: public.ecr.aws/bitnami/git:latest
             script: |
               cd $(workspaces.shared-data.path)/biobase-core
-              git rev-parse HEAD > /workspace/shared-data/biobase-core/sha.txt
+              git rev-parse HEAD | tee $(results.commit-sha.path)
       workspaces:
         - name: shared-data
           workspace: shared-data
-    - name: build-push
+    - name: get-commit-sha
       runAfter:
         - show-readme
       taskRef:
@@ -78,7 +81,7 @@ spec:
           workspace: docker-config
       params:
         - name: IMAGE
-          value: $(params.image-reference):$(cat /workspace/source/commit-sha/sha.txt)
+          value: "$(params.image-reference):$(tasks.get-commit-sha.results.commit-sha)"
         - name: EXTRA_ARGS
           value:
             - --cache=true

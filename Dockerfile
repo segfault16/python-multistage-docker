@@ -1,6 +1,5 @@
 # ------------------- Stage 1: Build Stage ------------------------------
-FROM python:3.9 AS backend-builder
-
+FROM public.ecr.aws/docker/library/python:3.9 AS backend-builder
 # Set the working directory to /app
 WORKDIR /app
 
@@ -13,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ------------------- Stage 2: Final Stage ------------------------------
 
 # Use a slim Python 3.9 image as the final base image
-FROM python:3.9-slim
+FROM public.ecr.aws/docker/library/python:3.9-slim
 
 # Set the working directory to /app
 WORKDIR /app

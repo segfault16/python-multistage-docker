@@ -5,6 +5,6 @@ metadata:
   namespace: tekton-pipelines
 spec:
   bindings:
-    - ref: mega-triggerbinding
+    - ref: pipeline-binding
   template:
     ref: python-multistage-docker-triggertemplate

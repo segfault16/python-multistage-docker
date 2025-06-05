@@ -68,7 +68,7 @@ spec:
       workspaces:
         - name: shared-data
           workspace: shared-data
-    - name: get-commit-sha
+    - name: build-and-push
       runAfter:
         - show-readme
       taskRef:

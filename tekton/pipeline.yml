@@ -61,11 +61,9 @@ spec:
             image: public.ecr.aws/bitnami/git:latest
             script: |
               cd $(workspaces.shared-data.path)/biobase-core
-              git rev-parse HEAD > /workspace/commit-sha/sha.txt
+              git rev-parse HEAD > /workspace/shared-data/biobase-core/sha.txt
       workspaces:
         - name: shared-data
-          workspace: shared-data
-        - name: output
           workspace: shared-data
     - name: build-push
       runAfter:
@@ -80,7 +78,7 @@ spec:
           workspace: docker-config
       params:
         - name: IMAGE
-          value: $(params.image-reference):$(cat /workspace/commit-sha/sha.txt)
+          value: $(params.image-reference):$(cat /workspace/source/commit-sha/sha.txt)
         - name: EXTRA_ARGS
           value:
             - --cache=true

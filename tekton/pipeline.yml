@@ -64,7 +64,7 @@ spec:
             image: public.ecr.aws/bitnami/git:latest
             script: |
               cd $(workspaces.shared-data.path)/biobase-core
-              git rev-parse HEAD | tee $(results.commit-sha.path)
+              git rev-parse HEAD | tr -d '[:space:]' | tee $(results.commit-sha.path)
       workspaces:
         - name: shared-data
           workspace: shared-data

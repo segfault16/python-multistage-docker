@@ -4,6 +4,6 @@ metadata:
   name: python-multistage-docker-listener
   namespace: tekton-pipelines
 spec:
-  serviceAccountName: deployer
+  serviceAccountName: deployer-pipelines
   triggers:
     - triggerRef: python-multistage-docker-trigger

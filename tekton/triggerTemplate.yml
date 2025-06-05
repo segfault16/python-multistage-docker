@@ -19,6 +19,7 @@ spec:
       kind: PipelineRun
       metadata:
         namespace: tekton-pipelines
+        generateName: pmdp-run-
       spec:
         params:
           - name: repo-url

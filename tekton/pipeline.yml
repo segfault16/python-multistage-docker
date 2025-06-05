@@ -1,0 +1,72 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: python-multistage-docker-pipeline
+  namespace: tekton-pipelines
+spec:
+  description: |
+    This pipeline clones a git repo, then echoes the README file to the stout.
+  params:
+    - name: repo-url
+      type: string
+      description: The git repo URL to clone from.
+    - name: revision
+      type: string
+      description: The git revision to checkout. Defaults to 'main'.
+      default: master
+    - name: image-reference
+      type: string
+  workspaces:
+    - name: shared-data
+      description: |
+        This workspace contains the cloned repo files, so they can be read by the
+        next task.
+    - name: git-credentials
+      description: My ssh credentials
+    - name: docker-config
+      description: Docker config for pushing to ECR
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-data
+        - name: ssh-directory
+          workspace: git-credentials
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: subdirectory
+          value: biobase-core
+        - name: revision
+          value: $(params.revision)
+    - name: show-readme
+      runAfter:
+        - fetch-source
+      taskRef:
+        name: show-readme
+      workspaces:
+        - name: shared-data
+          workspace: shared-data
+      params:
+        - name: subdirectory
+          value: biobase-core
+    - name: build-push
+      runAfter:
+        - show-readme
+      taskRef:
+        name: kaniko
+      workspaces:
+        - name: source
+          workspace: shared-data
+          subPath: biobase-core
+        - name: dockerconfig
+          workspace: docker-config
+      params:
+        - name: IMAGE
+          value: $(params.image-reference)
+        - name: EXTRA_ARGS
+          value:
+            - --cache=true
+            - --cache-repo=494150080395.dkr.ecr.eu-west-1.amazonaws.com/cache

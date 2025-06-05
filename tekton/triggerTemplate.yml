@@ -1,0 +1,53 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: python-multistage-docker-triggertemplate
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: repo-url
+      description: The git repo URL to clone from.
+      default: https://github.com/segfault16/python-multistage-docker.git
+    - name: revision
+      description: The git revision to checkout.
+      default: master
+    - name: image-reference
+      description: The image reference to push to.
+      default: 494150080395.dkr.ecr.eu-west-1.amazonaws.com/mega-repository:7
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        namespace: tekton-pipelines
+      spec:
+        params:
+          - name: repo-url
+            value: $(tt.params.repo-url)
+          - name: revision
+            value: $(tt.params.revision)
+          - name: image-reference
+            value: $(tt.params.image-reference)
+        pipelineRef:
+          name: python-multistage-docker-pipeline
+        taskRunTemplate:
+          serviceAccountName: default
+        timeouts:
+          pipeline: 1h0m0s
+        workspaces:
+          - name: shared-data
+            volumeClaimTemplate:
+              metadata:
+                creationTimestamp: null
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
+              status: {}
+          - name: git-credentials
+            secret:
+              secretName: git-credentials
+          - name: docker-config
+            secret:
+              secretName: docker-config

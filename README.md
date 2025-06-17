@@ -40,7 +40,7 @@ Modern application deployments often involve containerizing both the backend and
    ```sh
    docker run -p 5000:5000 my-flask-app
    ```
-
+ 
 2. Access the Flask application in your web browser at `http://localhost:5000`.
 
 ## Dockerfile Explanation

@@ -1,0 +1,21 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your Argo Workflows chart has been deployed with the following components:
+
+1. Argo Workflow Template: {{ .Values.workflowTemplate.name }}
+2. Argo Workflow: {{ .Values.workflow.generateName }}{{ .Values.workflow.appRevision }}
+3. ArgoCD Application: {{ .Values.application.name }}
+
+To use this chart with ArgoCD:
+
+1. Apply the ArgoCD application manifest:
+   kubectl apply -f {{ .Values.application.name }}.yaml
+
+2. ArgoCD will automatically manage the workflow template and create workflows
+   based on new revisions.
+
+3. To check the status of your workflows:
+   kubectl get workflows -n {{ .Values.application.destination.namespace }}
+
+For more information, refer to the Argo Workflows documentation at:
+https://argoproj.github.io/argo-workflows/

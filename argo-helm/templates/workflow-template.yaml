@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: {{ .Values.workflowTemplate.name }}
+spec:
+  arguments:
+    parameters:
+      - name: repo
+        value: {{ .Values.workflowTemplate.repo.url }}
+      - name: branch
+        value: {{ .Values.workflowTemplate.repo.branch }}
+      - name: image
+        value: {{ .Values.workflowTemplate.images.prefix }}/{{ .Values.workflowTemplate.images.repository }}
+  entrypoint: main
+  serviceAccountName: {{ .Values.workflowTemplate.serviceAccountName }}
+  # We use a volume claim template so that we can have a shared workspace.
+  volumeClaimTemplates:
+    - metadata:
+        name: work
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.workflowTemplate.volumeClaimSize }}
+  templates:
+    - name: main
+      dag:
+        tasks:
+          - name: clone
+            templateRef:
+              name: git-clone-template
+              clusterScope: true
+              template: git-clone
+            arguments:
+              parameters:
+                - name: repo
+                  value: {{`"{{ workflow.parameters.repo }}"`}}
+                - name: branch
+                  value: {{`"{{ workflow.parameters.branch }}"`}}
+          - name: docker-image-build
+            templateRef:
+              name: docker-build-and-push-template
+              clusterScope: true
+              template: docker-build-and-push
+            arguments:
+              parameters:
+                - name: image
+                  value: "{{ .Values.workflowTemplate.images.prefix }}/{{ .Values.workflowTemplate.images.repository }}"
+                - name: revision
+                  value: {{`"{{ tasks.clone.outputs.parameters.revision }}"`}}
+                - name: cacheTag
+                  value: "{{ .Values.workflowTemplate.images.cacheTag }}"
+            depends: "clone"

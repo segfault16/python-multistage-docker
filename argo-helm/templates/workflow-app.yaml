@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.application.name }}
+  namespace: {{ .Values.application.namespace }}
+  annotations:
+    argocd.argoproj.io/refresh: hard
+spec:
+  project: {{ .Values.application.project }}
+  source:
+    repoURL: {{ .Values.application.repoURL }}
+    targetRevision: {{ .Values.application.targetRevision }}
+    path: argo-helm
+    helm:
+      # Pass values directly from ArgoCD to Helm
+      parameters:
+        - name: workflow.appRevision
+          value: "${ARGOCD_APP_REVISION}"
+  destination:
+    server: {{ .Values.application.destination.server }}
+    namespace: {{ .Values.application.destination.namespace }}
+  syncPolicy:
+    {{- if .Values.application.syncPolicy.automated }}
+    automated:
+      prune: {{ .Values.application.syncPolicy.automated.prune }}
+      selfHeal: {{ .Values.application.syncPolicy.automated.selfHeal }}
+    {{- end }}

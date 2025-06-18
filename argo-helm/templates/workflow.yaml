@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: {{ .Values.workflow.generateName }}
+  annotations:
+    # This annotation ensures a unique workflow for each revision
+    argocd.argoproj.io/tracking-id: "{{ .Values.workflow.appRevision }}"
+    {{- if eq .Release.Service "Helm" }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "0"
+    {{- end }}
+spec:
+  entrypoint: main
+  serviceAccountName: {{ .Values.workflow.serviceAccountName }}
+  arguments:
+    parameters:
+    - name: repo
+      value: {{ .Values.workflowTemplate.repo.url }}
+    - name: branch
+      # Use the appRevision or default to branch from values
+      value: {{ .Values.workflow.appRevision | default .Values.workflowTemplate.repo.branch }}
+    - name: revision-tag
+      # Use the appRevision for image tagging
+      value: {{ .Values.workflow.appRevision | default "latest" }}
+  workflowTemplateRef:
+    name: {{ .Values.workflowTemplate.name }}

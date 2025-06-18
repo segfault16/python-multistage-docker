@@ -6,7 +6,7 @@ application:
   namespace: argocd
   project: default
   repoURL: https://github.com/segfault16/python-multistage-docker
-  targetRevision: HEAD
+  targetRevision: master
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

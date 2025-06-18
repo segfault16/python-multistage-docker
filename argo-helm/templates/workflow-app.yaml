@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: {{ .Values.application.name }}
   namespace: {{ .Values.application.namespace }}
-  annotations:
-    argocd.argoproj.io/refresh: hard
 spec:
   project: {{ .Values.application.project }}
   source:

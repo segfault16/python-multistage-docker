@@ -44,6 +44,8 @@ spec:
               template: docker-build-and-push
             arguments:
               parameters:
+                - name: path
+                  value: "."
                 - name: image
                   value: "{{ .Values.workflowTemplate.images.prefix }}/{{ .Values.workflowTemplate.images.repository }}"
                 - name: revision

@@ -42,7 +42,7 @@ Modern application deployments often involve containerizing both the backend and
    ```
  
 2. Access the Flask application in your web browser at `http://localhost:5000`.
-
+ 
 ## Dockerfile Explanation
 
 The multistage Dockerfile consists of two build stages, each optimized for a specific purpose.
